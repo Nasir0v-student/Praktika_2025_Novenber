@@ -1,65 +1,92 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мир Книг - Товары</title>
+    <title>Управление товарами</title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/products.js"></script>
 </head>
-
-<body style="min-height: 100vh; display: flex; flex-direction: column;">
+<body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container">
             <a class="navbar-brand" href="/">Мир Книг</a>
-            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Главная</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Товары</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/products">Управление товарами</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Поиск книг..." id="searchInput">
-                    <button class="btn btn-outline-success" type="button" onclick="searchProducts()">Поиск</button>
-                </form>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">Главная</a>
+                <a class="nav-link" href="/products">Товары</a>
+                <a class="nav-link active" href="/admin/products">Управление товарами</a>
             </div>
         </div>
     </nav>
-    
-    <div class="container mt-4 flex-grow-1">
-        <h1 class="mb-4">Наши книги</h1>
-        <div class="row justify-content-center ms-1 me-1" id="products">
-            <!-- Здесь будут товары -->
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Загрузка...</span>
-                </div>
-                <p class="mt-2">Загрузка товаров...</p>
-            </div>
-        </div>
-    </div>
-    
-    <footer class="footer bg-body-tertiary mt-5">
-        <div class="container p-4">
-            <div class="d-flex flex-column">
-                <h3>Магазин "Мир Книг"</h3>
-                <span>Адрес: 456204, Златоуст, ул. Шапошникова, 1а​</span>
-                <span>Телефон: <a href="tel:+73513671044">+73513671044</a>​</span>
-            </div>
-        </div>
-        
-    </footer>
-</body>
 
+    <div class="container mt-4">
+        <h1>Управление товарами</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Добавить новый товар</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Название:</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Цена:</label>
+                            <input type="number" step="0.01" class="form-control" name="price" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание:</label>
+                        <textarea class="form-control" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Фото (URL):</label>
+                        <input type="text" class="form-control" name="photo" placeholder="">
+                    </div>
+                    <button type="submit" class="btn btn-success">Добавить товар</button>
+                </form>
+            </div>
+        </div>
+
+        <h2>Список товаров</h2>
+        {% if products %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Цена</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</td>
+                        <td>{{ product.price }} руб.</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_product', product_id=product.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить этот товар?')">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">Товаров пока нет.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
 </html>
