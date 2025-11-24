@@ -7,16 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAuthStatus();
     updateCartBadge();
     
-    // Добавляем обработчик события для поиска при нажатии Enter
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchProducts();
-            }
-        });
+   
     }
-});
+);
 
 function loadProducts() {
     fetch('/api/product/all')
@@ -120,29 +113,7 @@ function addToCartFromProducts(productId) {
     }
 }
 
-// Резервная функция добавления в корзину
-function addToCartDirect(product) {
-    let cart = JSON.parse(localStorage.getItem('bookstore_cart')) || [];
-    const existingItem = cart.find(item => item.id === product.id);
-    
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: product.id,
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            quantity: 1
-        });
-    }
-    
-    localStorage.setItem('bookstore_cart', JSON.stringify(cart));
-    updateCartBadge();
-    
-    // Показать уведомление
-    showNotification(`"${product.name}" добавлен в корзину!`, 'success');
-}
+
 
 // Обновление бейджа корзины
 function updateCartBadge() {

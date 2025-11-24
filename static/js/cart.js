@@ -1,4 +1,4 @@
-// cart.js - управление корзиной
+
 
 let cart = [];
 
@@ -110,20 +110,60 @@ function removeFromCart(productId) {
     displayCart();
 }
 
-// Оформление заказа
-function checkout() {
+
+async function checkout() {
     if (cart.length === 0) {
         alert('Корзина пуста!');
+        return;
+    }
+
+    // Проверка авторизации пользователя
+    try {
+        const response = await fetch('/api/user');
+        const result = await response.json();
+        
+        if (!result.logged_in) {
+            alert('Для оформления заказа необходимо войти в систему!');
+
+        
+            return;
+        }
+    } catch (error) {
+        console.error('Ошибка проверки авторизации:', error);
+        alert('Ошибка при проверке авторизации');
         return;
     }
 
     const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
     if (confirm(`Подтвердить заказ на сумму ${total.toFixed(2)} руб.?`)) {
-        alert('Заказ успешно оформлен! Спасибо за покупку!');
-        cart = [];
-        saveCart();
-        displayCart();
+        try {
+            // Создаем заказ на сервере
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    items: cart,
+                    total_amount: total
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Заказ успешно оформлен! Номер вашего заказа: ' + result.order_id);
+                cart = [];
+                saveCart();
+                displayCart();
+            } else {
+                alert('Ошибка при оформлении заказа: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Ошибка при оформлении заказа:', error);
+            alert('Ошибка при оформлении заказа');
+        }
     }
 }
 
@@ -151,9 +191,8 @@ function addToCart(product) {
     showNotification(`"${product.name}" добавлен в корзину!`, 'success');
 }
 
-// Вспомогательная функция для уведомлений
+
 function showNotification(message, type) {
-    // Создаем временное уведомление
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} position-fixed`;
     notification.style.top = '20px';

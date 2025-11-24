@@ -32,7 +32,6 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Главная</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/products">Товары</a>
@@ -48,15 +47,16 @@
                     </li>
                 </ul>
                 
+                <form class="d-flex me-2" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Поиск книг..." id="searchInput">
+                        <button class="btn btn-outline-success" type="button" onclick="searchProducts()">Поиск</button>
+                    </form>
                 <div class="d-flex align-items-center">
                     <a class="btn btn-outline-primary d-flex align-items-center me-2" href="/cart">
                         🛒<span class="badge bg-primary ms-2" id="cartBadge">0</span>
                     </a>
                     
-                    <form class="d-flex me-2" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Поиск книг..." id="searchInput">
-                        <button class="btn btn-outline-success" type="button" onclick="searchProducts()">Поиск</button>
-                    </form>
+                   
                     
                     <!-- Кнопки авторизации -->
                     <div class="d-flex align-items-center" id="authButtons">
@@ -223,6 +223,14 @@
                 const password = document.getElementById('registerPassword').value;
                 registerUser(name, email, password);
             });
+
+            // Обработчик нажатия Enter в поле поиска
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchProducts();
+                }
+            });
         });
 
         // Проверка статуса авторизации
@@ -358,7 +366,12 @@
         }
 
         function searchProducts() {
-            window.location.href = '/products';
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm) {
+                window.location.href = `/products?search=${encodeURIComponent(searchTerm)}`;
+            } else {
+                window.location.href = '/products';
+            }
         }
     </script>
 </body>

@@ -1,4 +1,4 @@
-// auth.js - управление авторизацией на главной странице
+
 
 let currentUser = null;
 let isAdmin = false;
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Проверка статуса авторизации
+// Проверка авторизации
 async function checkAuthStatus() {
     try {
         const response = await fetch('/api/user');
@@ -56,7 +56,7 @@ async function loginUser(email, password) {
             isAdmin = result.user.is_admin;
             updateUI();
             
-            // Закрываем модальное окно
+            // Закрываем окно
             const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
             loginModal.hide();
             
@@ -90,11 +90,11 @@ async function registerUser(name, email, password) {
             isAdmin = result.user.is_admin;
             updateUI();
             
-            // Закрываем модальное окно
+            // Закрываем окно
             const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
             registerModal.hide();
             
-            // Очищаем форму
+          
             document.getElementById('registerForm').reset();
             
             showNotification('Регистрация успешна! Добро пожаловать, ' + name + '!', 'success');
@@ -135,7 +135,7 @@ function updateUI() {
         userStatus.textContent = currentUser.name;
         logoutBtn.style.display = 'block';
         
-        // Показываем ссылку на админку только для администраторов
+        // Показываем ссылку на административную панель
         if (isAdmin) {
             adminLink.style.display = 'block';
         } else {
@@ -151,14 +151,7 @@ function updateUI() {
 // Вспомогательная функция для уведомлений
 function showNotification(message, type) {
     // Создаем простое уведомление с помощью alert
-    // В реальном проекте можно использовать Toast или аналогичную библиотеку
+
     alert(message);
 }
 
-// Проверка доступа к админке при переходе
-document.getElementById('adminLink').addEventListener('click', function(e) {
-    if (!isAdmin) {
-        e.preventDefault();
-        showNotification('Доступ запрещен. Требуются права администратора.', 'error');
-    }
-});

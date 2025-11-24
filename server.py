@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Важно: замените на случайный ключ
+app.secret_key = '12345'  
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Конфигурация базы данных
@@ -103,7 +103,7 @@ class OrderItem(db.Model):
             'total': self.price * self.quantity
         }
 
-# Декоратор для проверки авторизации
+# проверкf авторизации
 def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
@@ -126,7 +126,7 @@ def admin_required(f):
     decorated_function.__name__ = f.__name__
     return decorated_function
 
-# HTML страницы
+# страницы
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -141,7 +141,7 @@ def cart_page():
     """Страница корзины"""
     return render_template("cart.html")
 
-# API для аутентификации
+
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -380,7 +380,7 @@ def main():
     with app.app_context():
         db.create_all()
 
-        # Добавим начальные записи для продуктов (книг)
+        #  записи для книг
         if not Product.query.first():
             product1 = Product(
                 name="Война и мир", 
@@ -405,7 +405,7 @@ def main():
             db.session.add_all([product1, product2, product3, product4])
             db.session.commit()
 
-        # Создаем администратора по умолчанию
+        # администратор 
         if not User.query.filter_by(email='admin@books.ru').first():
             admin_user = User(
                 name='Администратор',
@@ -415,7 +415,7 @@ def main():
             )
             db.session.add(admin_user)
             db.session.commit()
-
+            # пользователь
         if not User.query.filter_by(email='user@books.ru').first():
             regular_user = User(
                 name='Обычный пользователь',
